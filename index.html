@@ -1,66 +1,6 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROBLOX RECOVERY SYSTEM</title>
-    <style>
-        body { background-color: #000; color: #f00; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; cursor: pointer; overflow: hidden; }
-        .container { border: 3px solid #f00; padding: 30px; width: 95%; max-width: 600px; text-align: center; background: #010; box-shadow: 0 0 30px #f00; }
-        .hidden { display: none; }
-        .legend-content { text-align: left; line-height: 1.6; color: #ccc; background: #020; padding: 20px; border: 1px solid #0f0; margin-bottom: 20px; }
-        textarea { padding: 15px; width: 90%; height: 100px; background: #000; border: 1px solid #f00; color: #f00; margin-top: 15px; font-size: 1.2em; outline: none; resize: none; }
-        button { background: #f00; color: #fff; border: none; padding: 15px 30px; margin: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em; }
-        button:disabled { background: #333; color: #666; cursor: not-allowed; }
-        .speaking-status { color: #0f0; font-size: 0.9em; margin-bottom: 10px; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-    </style>
-</head>
-<body onclick="initAudio()">
-
-<audio id="bgSound" loop>
-    <source src="https://translate.google.com/translate_tts?ie=UTF-8&q=%E0%B9%82%E0%B8%94%E0%B8%99%E0%B9%81%E0%B8%94%E0%B8%81%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B9%81%E0%B8%AB%E0%B8%81%E0%B8%9B%E0%B8%B2%E0%B8%81&tl=th&client=tw-ob" type="audio/mpeg">
-</audio>
-<audio id="legendNarrator" onended="unlockNextButton()"></audio>
-
-<div class="container">
-    <div id="step1">
-        <h1>ระบบกู้คืนรหัสผ่าน</h1>
-        <p>คุณต้องการรับรหัสผ่านคืนใช่หรือไม่?</p>
-        <button onclick="exitSystem()">ไม่</button>
-        <button onclick="toStep2()">ใช่</button>
-    </div>
-
-    <div id="step2" class="hidden">
-        <div id="narratingIndicator" class="speaking-status">● ระบบกำลังให้บทเรียน...</div>
-        <div class="legend-content">
-            <b style="color:gold; display:block; text-align:center; margin-bottom:10px;">ตำนานปลาหมอปากดี</b>
-            "ปลาหมอมันชอบพ่นฟองให้คนรู้ว่ามันอยู่ไหน สุดท้ายพรานก็แทงฉมวกลงที่ปากมันพอดี มันตายเพราะปากของมันเอง"
-        </div>
-        <button id="nextBtn" onclick="toStep3()" disabled>ไปรับโทษ</button>
-    </div>
-
-    <div id="step3" class="hidden">
-        <p style="color: gold;">พิมพ์ประโยคด้านล่าง <b>5 รอบ</b> เพื่อยืนยันความสำนึก</p>
-        <p style="color: #fff; background: #400; padding: 5px;">"ผมขอโทษที่ปากดี"</p>
-        <textarea id="userInput" onpaste="alert('ห้ามก๊อป!'); return false;" placeholder="พิมพ์มือเท่านั้น..."></textarea>
-        <br>
-        <button onclick="verifyRepentance()">ส่งคำสำนึกผิด</button>
-    </div>
-
-    <div id="reward" class="hidden">
-        <h1 style="color: #0f0;">ปลดล็อคสำเร็จ</h1>
-        <div style="border: 2px dashed #0f0; padding: 20px; background: #020; margin-bottom:15px;">
-            ID: 123cggvsruok<br>
-            PASS: <span style="color: gold; font-weight: bold;">siwakorn99</span>
-        </div>
-        <p style="color: #0f0; font-size: 0.8em;">"จำไว้... ปากดีกับศัตรูคือกล้า ปากดีกับพวกพ้องคือซวย"</p>
-    </div>
-</div>
-
 <script>
     let audioStarted = false;
-    const legendText = "ปลาหมอปากดี ชอบพ่นฟองให้คนรู้ว่าอยู่ไหน สุดท้ายพรานก็แทงฉมวกลงที่ปากมันพอดี มันตายเพราะปากของมันเอง";
+    const legendText = "ปลาหมอปากดี สุดท้ายก็ตายเพราะปากตัวเอง"; // ตัดให้สั้นสุดๆ
 
     function initAudio() { if (!audioStarted) { document.getElementById("bgSound").play(); audioStarted = true; } }
 
@@ -70,16 +10,21 @@
         document.getElementById("bgSound").pause();
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
+        
         const narrator = document.getElementById('legendNarrator');
         narrator.src = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(legendText)}&tl=th&client=tw-ob`;
         narrator.play();
+
+        // --- จุดที่แก้ไข: ปรับให้รอแค่ 3 วินาทีปุ่มก็ขึ้นเลย ---
+        setTimeout(unlockNextButton, 3000); 
     }
 
     function unlockNextButton() {
         const btn = document.getElementById('nextBtn');
         btn.disabled = false;
         btn.style.background = "#0f0";
-        document.getElementById('narratingIndicator').innerText = "● ฟังจบแล้ว...";
+        btn.style.color = "#000";
+        document.getElementById('narratingIndicator').innerText = "● บทเรียนพร้อมแล้ว...";
     }
 
     function toStep3() {
@@ -96,9 +41,7 @@
             document.getElementById('reward').classList.remove('hidden');
             document.getElementById("bgSound").pause();
         } else {
-            alert("พิมพ์ไปแค่ " + count + " รอบเอง! เอาให้ครบ 5!");
+            alert("พิมพ์มาแค่ " + count + " รอบเอง! พิมพ์ให้ครบ 5!");
         }
     }
 </script>
-</body>
-</html>
